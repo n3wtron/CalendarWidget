@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TableRow.LayoutParams;
 
 
 public class CalendarView extends TableLayout {
@@ -84,6 +85,7 @@ public class CalendarView extends TableLayout {
 		//Second Row ( Day Of weeks row ) 
 		TypedArray dayOfWeek = res.obtainTypedArray(R.array.DaysOfWeek);
 		TableRow secondRow = new TableRow(context,attrs);
+		secondRow.setBackgroundColor(Color.BLACK);
 		for (int i=1;i<=7;i++){
 			TextView dayLbl = new TextView(context,attrs);
 			dayLbl.setText(dayOfWeek.getString(i-1));
@@ -97,12 +99,16 @@ public class CalendarView extends TableLayout {
 		singleRowLayout.setMargins(0, 1, 0, 0);
 		for (int r=0;r<6;r++){
 			rows[r]=new TableRow(context, attrs);
-			rows[r].setBackgroundColor(Color.BLACK);
-			
+			android.widget.TableRow.LayoutParams rowParam = rows[r].generateLayoutParams(attrs);
 			for (int i=0;i<7;i++){
+				if (i==0){
+					rowParam.setMargins(1, 0, 1, 0);
+				}else{
+					rowParam.setMargins(0, 0, 1, 0);	
+				}
 				int curDow = (r*7)+(i+1);
 				DayTextView day = new DayTextView(context, attrs,getCal().getTime());
-				
+				day.setBackgroundColor(Color.BLACK);
 				day.setWidth(30);
 				day.setText(Integer.toString(curDow));
 				day.setOnClickListener(new OnClickListener() {
@@ -114,7 +120,7 @@ public class CalendarView extends TableLayout {
 					}
 				});
 				days.add(day);
-				rows[r].addView(day,i);
+				rows[r].addView(day,i,rowParam);
 			}
 			addView(rows[r],singleRowLayout);
 		}
@@ -125,7 +131,6 @@ public class CalendarView extends TableLayout {
 	private void disableDay (DayTextView d){
 		d.setText(" ");
 		d.setEnabled(false);
-		d.setBackgroundColor(Color.TRANSPARENT);
 	}
 	
 	public void refresh(){
