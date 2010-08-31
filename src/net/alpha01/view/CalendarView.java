@@ -31,10 +31,13 @@ public class CalendarView extends TableLayout {
 	private int highLightColor=Color.RED;
 	private TextView nextLbl,prevLbl;
 	private TextView currMonthTextView;
+	private Resources res;
 	
 	public CalendarView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setBackgroundColor(Color.DKGRAY);
+		//retreive resources
+		res=getResources();
 		
 		//retrieve the year and month argument
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CalendarView);
@@ -78,6 +81,16 @@ public class CalendarView extends TableLayout {
 		firstRow.addView(nextLbl);
 		addView(firstRow,0);
 		
+		//Second Row ( Day Of weeks row ) 
+		TypedArray dayOfWeek = res.obtainTypedArray(R.array.DaysOfWeek);
+		TableRow secondRow = new TableRow(context,attrs);
+		for (int i=1;i<=7;i++){
+			TextView dayLbl = new TextView(context,attrs);
+			dayLbl.setText(dayOfWeek.getString(i-1));
+			dayLbl.setGravity(Gravity.CENTER);
+			secondRow.addView(dayLbl);
+		}
+		addView(secondRow);
 		
 		//Set layout for each row (to do border)
 		LayoutParams singleRowLayout=generateLayoutParams(attrs);
@@ -124,7 +137,6 @@ public class CalendarView extends TableLayout {
 		Calendar tmpCal = GregorianCalendar.getInstance();
 		tmpCal.setTime(cal.getTime());
 		
-		Resources res=getResources();
 		TypedArray monthName = res.obtainTypedArray(R.array.MonthName);
 		currMonthTextView.setText(monthName.getString(tmpCal.get(Calendar.MONTH))+" "+tmpCal.get(Calendar.YEAR));
 		//retrieve the first day of week

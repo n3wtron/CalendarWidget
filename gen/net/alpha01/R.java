@@ -9,7 +9,8 @@ package net.alpha01;
 
 public final class R {
     public static final class array {
-        public static final int MonthName=0x7f030000;
+        public static final int DaysOfWeek=0x7f050001;
+        public static final int MonthName=0x7f050000;
     }
     public static final class attr {
         /** <p>Must be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
@@ -38,16 +39,15 @@ containing a value of this type.
          */
         public static final int year=0x7f010000;
     }
+    public static final class drawable {
+        public static final int icon=0x7f020000;
+    }
+    public static final class layout {
+        public static final int main=0x7f030000;
+    }
     public static final class string {
-        public static final int Fri=0x7f020006;
-        public static final int Mon=0x7f020002;
-        public static final int Sat=0x7f020007;
-        public static final int Sun=0x7f020008;
-        public static final int Thu=0x7f020005;
-        public static final int Tue=0x7f020003;
-        public static final int Wed=0x7f020004;
-        public static final int app_name=0x7f020001;
-        public static final int hello=0x7f020000;
+        public static final int app_name=0x7f040001;
+        public static final int hello=0x7f040000;
     }
     public static final class styleable {
         /** Attributes that can be used with a CalendarView.

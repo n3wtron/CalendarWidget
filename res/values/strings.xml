@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <string name="hello">Hello World, TestCalendarAct!</string>
-    <string name="app_name">CalendarView</string>
-	<string name="Mon">Lun</string>
-	<string name="Tue">Mar</string>
-	<string name="Wed">Mer</string>
-	<string name="Thu">Gio</string>
-	<string name="Fri">Fri</string>
-	<string name="Sat">Sab</string>
-	<string name="Sun">Dom</string>
 <string-array name="MonthName">
-<item>January</item>
-<item>February</item>
-<item>March</item>
-<item>April</item>
-<item>May</item>
-<item>Jun</item>
-<item>July</item>
-<item>August</item>
-<item>September</item>
-<item>October</item>
-<item>November</item>
-<item>December</item>
+	<item>January</item>
+	<item>February</item>
+	<item>March</item>
+	<item>April</item>
+	<item>May</item>
+	<item>Jun</item>
+	<item>July</item>
+	<item>August</item>
+	<item>September</item>
+	<item>October</item>
+	<item>November</item>
+	<item>December</item>
+</string-array>
+<string-array name="DaysOfWeek">
+	<item>Mon</item>
+	<item>Tue</item>
+	<item>Wed></item>
+	<item>Thu></item>
+	<item>Fri></item>
+	<item>Sat></item>
+	<item>Sun></item>
 </string-array>
 </resources>
