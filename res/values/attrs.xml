@@ -4,5 +4,6 @@
 		<attr name="year" format="integer" />
 		<attr name="month" format="integer"/>
 		<attr name="highlightColor" format="color"/>
+		<attr name="stretchColumns" format="boolean"/>
 	</declare-styleable>
 </resources>

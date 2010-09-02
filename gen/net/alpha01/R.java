@@ -30,6 +30,14 @@ theme attribute (in the form
 containing a value of this type.
          */
         public static final int month=0x7f010001;
+        /** <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int stretchColumns=0x7f010003;
         /** <p>Must be an integer value, such as "<code>100</code>".
 <p>This may also be a reference to a resource (in the form
 "<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
@@ -48,14 +56,16 @@ containing a value of this type.
            <tr><th>Attribute</th><th>Description</th></tr>
            <tr><td><code>{@link #CalendarView_highlightColor net.alpha01:highlightColor}</code></td><td></td></tr>
            <tr><td><code>{@link #CalendarView_month net.alpha01:month}</code></td><td></td></tr>
+           <tr><td><code>{@link #CalendarView_stretchColumns net.alpha01:stretchColumns}</code></td><td></td></tr>
            <tr><td><code>{@link #CalendarView_year net.alpha01:year}</code></td><td></td></tr>
            </table>
            @see #CalendarView_highlightColor
            @see #CalendarView_month
+           @see #CalendarView_stretchColumns
            @see #CalendarView_year
          */
         public static final int[] CalendarView = {
-            0x7f010000, 0x7f010001, 0x7f010002
+            0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003
         };
         /**
           <p>This symbol is the offset where the {@link net.alpha01.R.attr#highlightColor}
@@ -86,6 +96,20 @@ containing a value of this type.
           @attr name android:month
         */
         public static final int CalendarView_month = 1;
+        /**
+          <p>This symbol is the offset where the {@link net.alpha01.R.attr#stretchColumns}
+          attribute's value can be found in the {@link #CalendarView} array.
+
+
+          <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:stretchColumns
+        */
+        public static final int CalendarView_stretchColumns = 3;
         /**
           <p>This symbol is the offset where the {@link net.alpha01.R.attr#year}
           attribute's value can be found in the {@link #CalendarView} array.
