@@ -227,6 +227,7 @@ public class CalendarView extends TableLayout {
 			cal.set(Calendar.MILLISECOND, 0);
 			highlightedDate.add(cal.getTime());
 		}
+		refresh();
 	}
 
 	public HashSet<Date> getHighlightedDate() {
@@ -235,6 +236,7 @@ public class CalendarView extends TableLayout {
 
 	public void cleanHighlightedDate() {
 		this.highlightedDate.clear();
+		refresh();
 	}
 
 	public void setHighLightColor(int highLightColor) {
