@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import net.alpha01.R;
 import net.alpha01.listener.DayClickListener;
@@ -26,8 +28,7 @@ public class CalendarView extends TableLayout {
 	private TableRow rows[] = new TableRow[6];
 	private DayClickListener dayClickListener = null;
 	private Calendar cal;
-	private HashSet<Date> highlightedDate = new HashSet<Date>();
-	private int highLightColor = Color.RED;
+	private HashMap<Date,Integer> highlightedColorDate= new  HashMap<Date, Integer>();
 	private TextView nextLbl, prevLbl;
 	private TextView currMonthTextView;
 	private Resources res;
@@ -171,8 +172,8 @@ public class CalendarView extends TableLayout {
 			((DayTextView) daysAr[arPos]).setText(Integer.toString(tmpCal.get(Calendar.DAY_OF_MONTH)));
 			((DayTextView) daysAr[arPos]).setEnabled(true);
 			// Check if highlighted Day
-			if (highlightedDate.contains(tmpCal.getTime())) {
-				((DayTextView) daysAr[arPos]).setTextColor(highLightColor);
+			if (highlightedColorDate.containsKey(tmpCal.getTime())) {
+				((DayTextView) daysAr[arPos]).setTextColor(highlightedColorDate.get(tmpCal.getTime()));
 			}
 			Log.d("CalView", "day:" + i);
 			// increment the day
@@ -215,8 +216,8 @@ public class CalendarView extends TableLayout {
 		}
 	}
 
-	public void setHighlightedDate(HashSet<Date> aHighlighedDate) {
-		this.highlightedDate.clear();
+	public void setHighlightedDate(HashSet<Date> aHighlighedDate,int color) {
+		cleanHighlightedDate(color);
 		Iterator<Date> itD = aHighlighedDate.iterator();
 		Calendar cal = GregorianCalendar.getInstance();
 		while (itD.hasNext()) {
@@ -225,26 +226,37 @@ public class CalendarView extends TableLayout {
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
-			highlightedDate.add(cal.getTime());
+			highlightedColorDate.put(cal.getTime(), color);
 		}
 		refresh();
 	}
 
-	public HashSet<Date> getHighlightedDate() {
-		return highlightedDate;
+	public HashSet<Date> getHighlightedDate(int color) {
+		Iterator<Entry<Date,Integer>> itD = this.highlightedColorDate.entrySet().iterator();
+		HashSet<Date> result=new HashSet<Date>();
+		while (itD.hasNext()){
+			Entry<Date,Integer> entity = itD.next();
+			if (entity.getValue()==color){
+				result.add(entity.getKey());
+			}
+		}
+		return result;
 	}
 
-	public void cleanHighlightedDate() {
-		this.highlightedDate.clear();
+	public void cleanHighlightedDate(int color) {
+		Iterator<Entry<Date,Integer>> itD = this.highlightedColorDate.entrySet().iterator();
+		while (itD.hasNext()){
+			Entry<Date,Integer> entity = itD.next();
+			if (entity.getValue()==color){
+				highlightedColorDate.remove(entity.getKey());
+			}
+		}
 		refresh();
 	}
-
-	public void setHighLightColor(int highLightColor) {
-		this.highLightColor = highLightColor;
-	}
-
-	public int getHighLightColor() {
-		return highLightColor;
+	
+	public void cleanHighlightedDate() {
+		this.highlightedColorDate.clear();
+		refresh();
 	}
 
 }
