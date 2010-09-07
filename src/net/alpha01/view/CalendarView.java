@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import net.alpha01.R;
 import net.alpha01.listener.DayClickListener;
+import net.alpha01.listener.MonthClickListener;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -32,11 +33,12 @@ public class CalendarView extends TableLayout {
 	private TextView nextLbl, prevLbl;
 	private TextView currMonthTextView;
 	private Resources res;
+	private MonthClickListener monthClickListener;
 
 	public CalendarView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setBackgroundColor(Color.DKGRAY);
-		// retreive resources
+		// Retrieve resources
 		res = getResources();
 
 		// retrieve the year and month argument
@@ -60,8 +62,7 @@ public class CalendarView extends TableLayout {
 		prevLbl.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				cal.add(Calendar.MONTH, -1);
-				refresh();
+				prevMonth();
 			}
 		});
 
@@ -70,8 +71,7 @@ public class CalendarView extends TableLayout {
 		nextLbl.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				cal.add(Calendar.MONTH, 1);
-				refresh();
+				nextMonth();
 			}
 		});
 
@@ -134,15 +134,43 @@ public class CalendarView extends TableLayout {
 		refresh();
 	}
 
-	private void disableDay(DayTextView d) {
-		d.setText(" ");
-		d.setEnabled(false);
+	
+	public void nextMonth(){
+		cal.add(Calendar.MONTH, 1);
+		refresh();
+		if (monthClickListener!=null){
+			monthClickListener.onNextMonthClickListener(cal);
+		}
+	}
+	
+	public void prevMonth(){
+		cal.add(Calendar.MONTH, -1);
+		refresh();
+		if (monthClickListener!=null){
+			monthClickListener.onPrevMonthClickListener(cal);
+		}
+	}
+	
+	/**
+	 * Disable a day label 
+	 * @param dayView DayTextView to disable
+	 */
+	private void disableDay(DayTextView dayView) {
+		dayView.setText(" ");
+		dayView.setEnabled(false);
 	}
 
+	/**
+	 * Refresh the current month
+	 */
 	public void refresh() {
 		refresh(this.getCal());
 	}
 
+	/**
+	 * Refresh the month specified by parameter
+	 * @param aCal calendar with month to visualize
+	 */
 	public void refresh(Calendar aCal) {
 		setCal(aCal);
 		Calendar tmpCal = GregorianCalendar.getInstance();
@@ -184,7 +212,8 @@ public class CalendarView extends TableLayout {
 		}
 	}
 
-	public void setCal(Calendar aCal) {
+	
+	private void setCal(Calendar aCal) {
 		if (cal == null) {
 			cal = GregorianCalendar.getInstance();
 		}
@@ -196,6 +225,10 @@ public class CalendarView extends TableLayout {
 		cal.set(Calendar.MILLISECOND, 0);
 	}
 
+	/**
+	 * Retrieve the current calendar
+	 * @return current calendar
+	 */
 	public Calendar getCal() {
 		return cal;
 	}
@@ -215,6 +248,10 @@ public class CalendarView extends TableLayout {
 			});
 		}
 	}
+	
+	public void setOnMonthClickListener(MonthClickListener listener){
+		this.monthClickListener=listener;
+	}
 
 	public void setHighlightedDate(HashSet<Date> aHighlighedDate,int color) {
 		cleanHighlightedDate(color);
@@ -231,6 +268,11 @@ public class CalendarView extends TableLayout {
 		refresh();
 	}
 
+	/**
+	 * Return the highlighted day with the specified color 
+	 * @param color 
+	 * @return
+	 */
 	public HashSet<Date> getHighlightedDate(int color) {
 		Iterator<Entry<Date,Integer>> itD = this.highlightedColorDate.entrySet().iterator();
 		HashSet<Date> result=new HashSet<Date>();
