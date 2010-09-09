@@ -173,8 +173,12 @@ public class CalendarView extends TableLayout {
 	 */
 	public void refresh(Calendar aCal) {
 		setCal(aCal);
+		
 		Calendar tmpCal = GregorianCalendar.getInstance();
 		tmpCal.setTime(cal.getTime());
+		
+		Date tmpDate=cal.getTime();
+		Date tmpDate2=tmpCal.getTime();
 
 		TypedArray monthName = res.obtainTypedArray(R.array.MonthName);
 		currMonthTextView.setText(monthName.getString(tmpCal.get(Calendar.MONTH)) + " " + tmpCal.get(Calendar.YEAR));
@@ -200,8 +204,11 @@ public class CalendarView extends TableLayout {
 			((DayTextView) daysAr[arPos]).setText(Integer.toString(tmpCal.get(Calendar.DAY_OF_MONTH)));
 			((DayTextView) daysAr[arPos]).setEnabled(true);
 			// Check if highlighted Day
-			if (highlightedColorDate.containsKey(tmpCal.getTime())) {
+			Date curDate=tmpCal.getTime();
+			if (highlightedColorDate.containsKey(curDate)) {
 				((DayTextView) daysAr[arPos]).setTextColor(highlightedColorDate.get(tmpCal.getTime()));
+			}else{
+				((DayTextView) daysAr[arPos]).setTextColor(Color.LTGRAY);
 			}
 			Log.d("CalView", "day:" + i);
 			// increment the day
@@ -218,11 +225,11 @@ public class CalendarView extends TableLayout {
 			cal = GregorianCalendar.getInstance();
 		}
 		cal.setTime(aCal.getTime());
-		cal.set(Calendar.DAY_OF_MONTH, 1);
 		cal.set(Calendar.HOUR, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
 	}
 
 	/**
@@ -259,13 +266,12 @@ public class CalendarView extends TableLayout {
 		Calendar cal = GregorianCalendar.getInstance();
 		while (itD.hasNext()) {
 			cal.setTime(itD.next());
-			cal.set(Calendar.HOUR, 0);
+			cal.set(Calendar.HOUR, 12);
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			highlightedColorDate.put(cal.getTime(), color);
 		}
-		refresh();
 	}
 
 	/**
@@ -293,12 +299,10 @@ public class CalendarView extends TableLayout {
 				highlightedColorDate.remove(entity.getKey());
 			}
 		}
-		refresh();
 	}
 	
 	public void cleanHighlightedDate() {
 		this.highlightedColorDate.clear();
-		refresh();
 	}
 
 }
