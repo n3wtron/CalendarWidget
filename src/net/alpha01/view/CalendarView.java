@@ -20,17 +20,19 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 public class CalendarView extends TableLayout {
 	private ArrayList<DayTextView> days = new ArrayList<DayTextView>();
+	private Object daysAr[];
 	private TableRow rows[] = new TableRow[6];
 	private DayClickListener dayClickListener = null;
 	private Calendar cal;
 	private HashMap<Date,Integer> highlightedColorDate= new  HashMap<Date, Integer>();
-	private TextView nextLbl, prevLbl;
+	private Button nextBtn, prevBtn;
 	private TextView currMonthTextView;
 	private Resources res;
 	private MonthClickListener monthClickListener;
@@ -57,18 +59,20 @@ public class CalendarView extends TableLayout {
 		setStretchAllColumns(a.getBoolean(R.styleable.CalendarView_stretchColumns, false));
 
 		// create the first row of buttons
-		prevLbl = new TextView(context, attrs);
-		prevLbl.setText("<<");
-		prevLbl.setOnClickListener(new OnClickListener() {
+		prevBtn = new Button(context, attrs);
+		prevBtn.setText("<<");
+		prevBtn.setMaxHeight(10);
+		prevBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				prevMonth();
 			}
 		});
 
-		nextLbl = new TextView(context, attrs);
-		nextLbl.setText(">>");
-		nextLbl.setOnClickListener(new OnClickListener() {
+		nextBtn = new Button(context, attrs);
+		nextBtn.setText(">>");
+		nextBtn.setMaxHeight(10);
+		nextBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				nextMonth();
@@ -79,11 +83,11 @@ public class CalendarView extends TableLayout {
 		currMonthTextView.setGravity(Gravity.CENTER);
 
 		TableRow firstRow = new TableRow(context, attrs);
-		firstRow.addView(prevLbl);
+		firstRow.addView(prevBtn);
 		android.widget.TableRow.LayoutParams firstRowLayout = firstRow.generateLayoutParams(attrs);
 		firstRowLayout.span = 5;
 		firstRow.addView(currMonthTextView, firstRowLayout);
-		firstRow.addView(nextLbl);
+		firstRow.addView(nextBtn);
 		addView(firstRow, 0);
 
 		// Second Row ( Day Of weeks row )
@@ -123,13 +127,14 @@ public class CalendarView extends TableLayout {
 				int curDow = (r * 7) + (i + 1);
 				DayTextView day = new DayTextView(context, attrs, getCal().getTime());
 				day.setBackgroundColor(Color.BLACK);
-				day.setWidth(50);
+				day.setWidth(20);
 				day.setText(Integer.toString(curDow));
 				days.add(day);
 				rows[r].addView(day, i, rowParam);
 			}
 			addView(rows[r], singleRowLayout);
 		}
+		daysAr = days.toArray();
 		// refresh the current Date
 		refresh();
 	}
@@ -137,18 +142,19 @@ public class CalendarView extends TableLayout {
 	
 	public void nextMonth(){
 		cal.add(Calendar.MONTH, 1);
-		refresh();
 		if (monthClickListener!=null){
 			monthClickListener.onNextMonthClickListener(cal);
 		}
+		refresh();
 	}
 	
 	public void prevMonth(){
 		cal.add(Calendar.MONTH, -1);
-		refresh();
 		if (monthClickListener!=null){
 			monthClickListener.onPrevMonthClickListener(cal);
 		}
+		refresh();
+		
 	}
 	
 	/**
@@ -167,6 +173,45 @@ public class CalendarView extends TableLayout {
 		refresh(this.getCal());
 	}
 
+	private void refreshSingleDate(int arPos,Calendar currDay){
+		Log.d("CalView", "Pos" + arPos + "CurrDay:" + currDay.get(Calendar.DAY_OF_MONTH));
+		((DayTextView) daysAr[arPos]).setDate(currDay.getTime());
+		((DayTextView) daysAr[arPos]).setText(Integer.toString(currDay.get(Calendar.DAY_OF_MONTH)));
+		((DayTextView) daysAr[arPos]).setEnabled(true);
+		// Check if highlighted Day
+		Date curDate=currDay.getTime();
+		curDate.setHours(0);
+		if (highlightedColorDate.containsKey(curDate)) {
+			((DayTextView) daysAr[arPos]).setTextColor(highlightedColorDate.get(curDate));
+		}else{
+			((DayTextView) daysAr[arPos]).setTextColor(Color.LTGRAY);
+		}
+	}
+	
+	/**
+	 * Refresh a single date
+	 * @param dt
+	 */
+	public void refreshSingleDate(Date dt){
+		Calendar tmpCal=GregorianCalendar.getInstance();
+		tmpCal.setTime(dt);
+		int arPos = dt.getDate() + getFdow() - 2;
+		refreshSingleDate(arPos, tmpCal);
+	}
+	
+	/**
+	 * retrieve the first day of week sum 1 for the human form
+	 * @return
+	 */
+	private int getFdow(){
+		int fdow = cal.get(Calendar.DAY_OF_WEEK) - 1;
+		// 1 is Sunday
+		if (fdow == 0) {
+			fdow = 7;
+		}
+		return fdow;
+	}
+	
 	/**
 	 * Refresh the month specified by parameter
 	 * @param aCal calendar with month to visualize
@@ -176,20 +221,12 @@ public class CalendarView extends TableLayout {
 		
 		Calendar tmpCal = GregorianCalendar.getInstance();
 		tmpCal.setTime(cal.getTime());
-		
-		Date tmpDate=cal.getTime();
-		Date tmpDate2=tmpCal.getTime();
 
 		TypedArray monthName = res.obtainTypedArray(R.array.MonthName);
 		currMonthTextView.setText(monthName.getString(tmpCal.get(Calendar.MONTH)) + " " + tmpCal.get(Calendar.YEAR));
-		// retrieve the first day of week
-		int fdow = cal.get(Calendar.DAY_OF_WEEK) - 1;
-		// 1 is Sunday
-		if (fdow == 0) {
-			fdow = 7;
-		}
-
-		Object daysAr[] = days.toArray();
+		// 
+		int fdow=getFdow();
+		
 		// disable the first days
 		for (int i = 0; i < fdow - 1; i++) {
 			disableDay((DayTextView) daysAr[i]);
@@ -199,17 +236,7 @@ public class CalendarView extends TableLayout {
 		Log.d("CalView", "numOfDays:" + numOfDays);
 		for (int i = 1; i <= numOfDays; i++) {
 			int arPos = i + fdow - 2;
-			Log.d("CalView", "Pos" + arPos + "CurrDay:" + tmpCal.get(Calendar.DAY_OF_MONTH));
-			((DayTextView) daysAr[arPos]).setDate(tmpCal.getTime());
-			((DayTextView) daysAr[arPos]).setText(Integer.toString(tmpCal.get(Calendar.DAY_OF_MONTH)));
-			((DayTextView) daysAr[arPos]).setEnabled(true);
-			// Check if highlighted Day
-			Date curDate=tmpCal.getTime();
-			if (highlightedColorDate.containsKey(curDate)) {
-				((DayTextView) daysAr[arPos]).setTextColor(highlightedColorDate.get(tmpCal.getTime()));
-			}else{
-				((DayTextView) daysAr[arPos]).setTextColor(Color.LTGRAY);
-			}
+			refreshSingleDate(arPos, tmpCal);
 			Log.d("CalView", "day:" + i);
 			// increment the day
 			tmpCal.add(Calendar.DAY_OF_MONTH, 1);
@@ -224,12 +251,13 @@ public class CalendarView extends TableLayout {
 		if (cal == null) {
 			cal = GregorianCalendar.getInstance();
 		}
+		cal.set(Calendar.DAY_OF_MONTH, 1);
 		cal.setTime(aCal.getTime());
-		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-		cal.set(Calendar.DAY_OF_MONTH, 1);
+		
 	}
 
 	/**
@@ -260,17 +288,34 @@ public class CalendarView extends TableLayout {
 		this.monthClickListener=listener;
 	}
 
+	/**
+	 * Add a day to the highlightedColorList 
+	 * @param dt date to add
+	 * @param color color to set
+	 */
+	public void addHighlightedDate(Date dt,int color){
+		highlightedColorDate.put(dt, color);
+		refreshSingleDate(dt);
+	}
+	
+	
+	/**
+	 * Clean the specified color and set new highlightedDateList
+	 * @param aHighlighedDate
+	 * @param color
+	 */
 	public void setHighlightedDate(HashSet<Date> aHighlighedDate,int color) {
 		cleanHighlightedDate(color);
 		Iterator<Date> itD = aHighlighedDate.iterator();
 		Calendar cal = GregorianCalendar.getInstance();
 		while (itD.hasNext()) {
 			cal.setTime(itD.next());
-			cal.set(Calendar.HOUR, 12);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			highlightedColorDate.put(cal.getTime(), color);
+			refreshSingleDate(cal.getTime());
 		}
 	}
 
